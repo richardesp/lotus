@@ -5,6 +5,7 @@ from lotus.models.lm import LM
 from lotus.models.openai_model import OpenAIModel
 from lotus.models.reranker import Reranker
 from lotus.models.rm import RM
+from lotus.models.watsonxai_model import WatsonxAIModel
 
 __all__ = [
     "OpenAIModel",
@@ -14,4 +15,5 @@ __all__ = [
     "LM",
     "RM",
     "Reranker",
+    "WatsonxAIModel"
 ]
