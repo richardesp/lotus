@@ -162,6 +162,7 @@ class SemFilterDataframe:
             )
 
             high_conf_idxs = set()
+            lotus.logger.debug(f"Helper logprobs: {helper_logprobs}")
             helper_tokens, helper_confidences = lotus.settings.helper_lm.format_logprobs_for_cascade(helper_logprobs)
 
             # Find where true/false is said and look at confidence
