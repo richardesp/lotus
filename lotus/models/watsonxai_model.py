@@ -67,11 +67,12 @@ class WatsonxAIModel(LM):
         Returns:
             int: The token count from the model, or 0 if token count is not available.
         """
-        # If the input is a list, join the list into a single string
-        if isinstance(prompt, list):
-            prompt_input = " ".join(prompt)
-        else:
-            prompt_input = prompt
+        
+        lotus.logger.debug(f"WatsonxAIModel.count_tokens prompt: {prompt}")
+
+        prompt_input = " ".join([f"{batch['role']}: {batch['content']}\n" for batch in prompt])
+        
+        lotus.logger.debug(f"WatsonxAIModel.count_tokens prompt_input: {prompt_input}")
 
         # Use the client's tokenize method to get the result
         response = self.client.tokenize(prompt=prompt_input, return_tokens=False)
