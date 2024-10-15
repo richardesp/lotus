@@ -112,9 +112,9 @@ def filter_postprocess(
     outputs = []
     explanations = [None] * len(llm_answers)
     for answer in llm_answers:
-        if "True" in answer:
+        if "True" in answer or "true" in answer:
             outputs.append(True)
-        elif "False" in answer:
+        elif "False" in answer or "false" in answer:
             outputs.append(False)
         else:
             lotus.logger.info(f"\t Failed to parse: defaulting to {default}")
