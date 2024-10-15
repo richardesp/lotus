@@ -73,7 +73,7 @@ class WatsonxAIModel(LM):
                 [f"{batch['role']}: {batch['content']}\n" for batch in prompt]
             )
         else:
-            prompt_input = prompt
+            prompt_input = f"{prompt}\n"
 
         lotus.logger.debug(f"WatsonxAIModel.count_tokens prompt_input: {prompt_input}")
 
