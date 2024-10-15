@@ -1,7 +1,7 @@
 import pandas as pd
 
 import lotus
-from lotus.models import OpenAIModel, WatsonxAIModel
+from lotus.models import WatsonxAIModel
 
 lotus.logger.setLevel("DEBUG")
 
