@@ -37,23 +37,21 @@ class WatsonxAIModel(LM):
             GenTextParamsMetaNames.MAX_NEW_TOKENS: self.max_tokens,
             GenTextParamsMetaNames.STOP_SEQUENCES: [],
             GenTextParamsMetaNames.REPETITION_PENALTY: 1,
-            **kwargs
+            **kwargs,
         }
-        
-        
 
         credentials = {
             "url": url or os.environ.get("WATSONX_URL", None),
             "apikey": api_key or os.environ.get("WATSONX_APIKEY", None),
         }
-        
+
         lotus.logger.debug(f"WatsonxAIModel.__init__ self.kwargs: {self.kwargs}")
 
         self.client = Model(
             model_id=self.model_id,
             params=self.kwargs,
             credentials=credentials,
-            project_id=project_id,
+            project_id=project_id or os.environ.get("WATSONX_PROJECTID", None),
             space_id=space_id,
         )
 
@@ -67,11 +65,13 @@ class WatsonxAIModel(LM):
         Returns:
             int: The token count from the model, or 0 if token count is not available.
         """
-        
+
         lotus.logger.debug(f"WatsonxAIModel.count_tokens prompt: {prompt}")
 
-        prompt_input = " ".join([f"{batch['role']}: {batch['content']}\n" for batch in prompt])
-        
+        prompt_input = " ".join(
+            [f"{batch['role']}: {batch['content']}\n" for batch in prompt]
+        )
+
         lotus.logger.debug(f"WatsonxAIModel.count_tokens prompt_input: {prompt_input}")
 
         # Use the client's tokenize method to get the result
@@ -117,10 +117,14 @@ class WatsonxAIModel(LM):
         new_messages_batch = []
 
         for batch in messages_batch:
-            combined_message = " ".join([f"{message['role']}: {message['content']}\n" for message in batch])
+            combined_message = " ".join(
+                [f"{message['role']}: {message['content']}\n" for message in batch]
+            )
             new_messages_batch.append(combined_message)
 
-        lotus.logger.debug(f"WatsonxAIModel.__call__ messages_batch: {new_messages_batch}")
+        lotus.logger.debug(
+            f"WatsonxAIModel.__call__ messages_batch: {new_messages_batch}"
+        )
         lotus.logger.debug(f"WatsonxAIModel.__call__ kwargs: {kwargs}")
 
         return_options = {
@@ -135,26 +139,31 @@ class WatsonxAIModel(LM):
 
         params = {
             GenTextParamsMetaNames.RETURN_OPTIONS: return_options,
-            GenTextParamsMetaNames.MAX_NEW_TOKENS: self.max_tokens
+            GenTextParamsMetaNames.MAX_NEW_TOKENS: self.max_tokens,
         }
-        
+
         lotus.logger.debug(f"WatsonxAIModel.__call__ return_options: {return_options}")
 
-        generated_outputs = self.client.generate(prompt=new_messages_batch, params=params)
+        generated_outputs = self.client.generate(
+            prompt=new_messages_batch, params=params
+        )
 
-        lotus.logger.debug(f"WatsonxAIModel.__call__ generated_outputs: {generated_outputs}")
+        lotus.logger.debug(
+            f"WatsonxAIModel.__call__ generated_outputs: {generated_outputs}"
+        )
 
-        generated_texts = [item['results'][0]['generated_text'] for item in generated_outputs]
+        generated_texts = [
+            item["results"][0]["generated_text"] for item in generated_outputs
+        ]
 
-        lotus.logger.debug(f"WatsonxAIModel.__call__ generated_texts (True/False): {generated_texts}")
+        lotus.logger.debug(
+            f"WatsonxAIModel.__call__ generated_texts (True/False): {generated_texts}"
+        )
 
         if kwargs.get("logprobs", False):
-            
+
             print(generated_outputs)
-            generated_tokens = [
-                result
-                for result in generated_outputs["results"]
-            ]
+            generated_tokens = [result for result in generated_outputs["results"]]
 
             generated_logprobs = [
                 [text.get("logprob", float("-inf")) for text in generated_token]
